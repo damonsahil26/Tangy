@@ -1,0 +1,13 @@
+﻿@page "/learnbasics/ParentComponent"
+<ChildComponent OnButtonClicked="@bindMessage" Title="This is from Parent Componet">This is for child fragment</ChildComponent>
+<ChildComponent OnButtonClicked="@bindMessage" Title="This is from Parent Componet"> </ChildComponent>
+<p>@Message</p>
+
+
+@code {
+    public string? Message { get; set; }
+    public void bindMessage()
+    {
+        Message = "This message was set from child component !!";
+    }
+}

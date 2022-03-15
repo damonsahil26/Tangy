@@ -1,0 +1,178 @@
+﻿@page "/LearnBasics/BindProp"
+@using Tangy_Models.LearnBasics_Models
+<h3 class="text-danger">Individual Product</h3>
+<div class=row>
+    <div class="col-6 border p-2">
+        <h3 class="text-primary">Product Playground</h3>
+        <hr />
+        <div>
+            @demo_Product.Name
+            <br />
+            @demo_Product.IsActive
+            <br />
+            @demo_Product.Price
+            <br />
+            This Product is @(demo_Product.IsActive?"Active":"Inactive")
+            <br />
+
+            The key of the product is : @key
+            <br />
+            @if (!String.IsNullOrWhiteSpace(@key))
+            {
+                <p>The Name of the Product is : @demo_Product.DemoProps.FirstOrDefault(u=>u?.Key==@key).Name </p>
+                <br />
+            }
+        </div>
+
+    </div>
+    <div class="col-6 border p-2">
+        <h3 class="text-primary">Product Summary</h3>
+        <hr />
+        <div>
+            Is Active <input type="checkbox" id="active-checkbox" @bind-value=@demo_Product.IsActive
+                             checked="@(demo_Product.IsActive?"checked":null)" />
+            <br />
+            Price <input type="number" @bind-value=@demo_Product.Price @bind-value:event="oninput" />
+            <br />
+            Select Key <select @bind="key">
+                @foreach (var item in @demo_Product.DemoProps)
+                {
+                    <option value=@item.Key>@item.Key</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+<br />
+<div>
+    <h3 class=text-success>Product Table</h3>
+    <div class=row border>
+        <table class="table">
+            <tbody>
+                @foreach (var item in AllProducts)
+                {
+                    <tr>
+                        <td><input @bind=item.Name /> </td>
+                        <td><input type="number" @bind=item.Price @bind:event="oninput" /> </td>
+                        <td><input type="checkbox" id="active-checkbox" @bind-value:event="oninput" @bind-value=@demo_Product.IsActive 
+                             checked="@(demo_Product.IsActive?"checked":null)" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-6 border p-2">
+        <h3 class="text-primary">Product Summary</h3>
+        <hr />
+        <div>
+               @foreach (var item in AllProducts)
+            {
+                <p>@item.Name the price is @item.Price and the product is @(item.IsActive?"Active":"InActive") </p>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    string key = "";
+    Demo_Product demo_Product = new()
+        {
+            Id = 1,
+            Name = "Rubik Cube",
+            IsActive = true,
+            Price = 10.99,
+            DemoProps = new List<Demo_ProductProp>()
+            {
+                new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                {
+                    Id=1,
+                    Key="Color",
+                    Name="Black"
+                },
+                 new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                {
+                    Id=2,
+                    Key="Type",
+                    Name="Flower"
+                },
+                 new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                {
+                    Id=3,
+                    Key="Smell",
+                    Name="Good"
+                }
+            }
+        };
+
+
+    List<Demo_Product> AllProducts = new();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AllProducts.Add(
+        new()
+            {
+                Id = 1,
+                Name = "Rubik Cube",
+                IsActive = true,
+                Price = 10.99,
+                DemoProps = new List<Demo_ProductProp>()
+                        {
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 1,
+                        Key = "Color",
+                        Name = "Black"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 2,
+                        Key = "Type",
+                        Name = "Flower"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 3,
+                        Key = "Smell",
+                        Name = "Good"
+                    }
+                        }
+            }
+        );
+
+        AllProducts.Add(
+    new()
+    {
+        Id = 2,
+        Name = "Rubik's Revenge",
+        IsActive = true,
+        Price = 14.99,
+        DemoProps = new List<Demo_ProductProp>()
+                {
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 1,
+                        Key = "Color",
+                        Name = "Red"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 2,
+                        Key = "Type",
+                        Name = "Car"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 3,
+                        Key = "Smell",
+                        Name = "Bad"
+                    }
+                }
+    }
+    );
+    }
+
+}

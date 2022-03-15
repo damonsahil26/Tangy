@@ -1,0 +1,34 @@
+﻿@page "/learnbasics/learnJS"
+@inject IJSRuntime _jsRuntime
+@using TangyWeb_Server.Helpers
+
+<h3>LearnJS</h3>
+
+<button class="btn btn-success" @onclick="showSuccessMessage">Success Button</button>
+<button class="btn btn-danger" @onclick="showErrorMessage">Error Button</button>
+<button class="btn btn-info" @onclick="showSweetSuccessMessage">Sweet Success</button>
+<button class="btn btn-primary" @onclick="showSweetErrorMessage">Sweet Error</button>
+
+
+@code {
+    private async Task showSuccessMessage()
+    {
+        await _jsRuntime.ShowToastr("success", "Successfully done");
+    }
+
+    private async Task showErrorMessage()
+    {
+        await _jsRuntime.ShowToastr("error", "Successfully Failed");
+    }
+
+    private async Task showSweetSuccessMessage()
+    {
+        await _jsRuntime.InvokeVoidAsync("showSweetAlert", "success", "Good Job!");
+    }
+
+
+    private async Task showSweetErrorMessage()
+    {
+         await _jsRuntime.InvokeVoidAsync("showSweetAlert","error", "Successfully Failed");
+    }
+}

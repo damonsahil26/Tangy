@@ -1,0 +1,102 @@
+﻿@page "/LearnBasics/DemoProducts"
+@using Tangy_Models.LearnBasics_Models
+<h3>Demo_Product</h3>
+<br />
+Total Fav Products :  @FavCount
+<br />
+<br />
+Last Selected Product :  @LastSelectedProd
+<br />
+
+@foreach (var item in products)
+{
+    <Product prod="@item" LastSelected="@LastSelected"   ToggleFavCount="@ToggleFavCount"></Product>
+}
+
+
+
+
+@code {
+    List<Demo_Product> products = new();
+    public int FavCount { get; set; } = 0;
+    public string LastSelectedProd { get; set; } = String.Empty;         
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        products.Add(new()
+            {
+                Id = 1,
+                Name = "Rubik Cube",
+                IsActive = true,
+                Price = 10.99,
+                DemoProps = new List<Demo_ProductProp>()
+                                          {
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 1,
+                        Key = "Color",
+                        Name = "Black"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 2,
+                        Key = "Type",
+                        Name = "Flower"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 3,
+                        Key = "Smell",
+                        Name = "Good"
+                    }
+                                          }
+            }
+      );
+
+        products.Add(
+    new()
+        {
+            Id = 2,
+            Name = "Rubik's Revenge",
+            IsActive = true,
+            Price = 14.99,
+            DemoProps = new List<Demo_ProductProp>()
+                                                        {
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 1,
+                        Key = "Color",
+                        Name = "Red"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 2,
+                        Key = "Type",
+                        Name = "Car"
+                    },
+                    new Tangy_Models.LearnBasics_Models.Demo_ProductProp
+                    {
+                        Id = 3,
+                        Key = "Smell",
+                        Name = "Bad"
+                    }
+                                                        }
+        }
+    );
+    }
+
+    private void ToggleFavCount(bool isSelected)
+    {
+        if (isSelected)
+            FavCount++;
+        else
+            FavCount--;
+    }
+
+    private void LastSelected(string name)
+    {
+        LastSelectedProd = name;
+    }
+
+    
+}

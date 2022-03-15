@@ -1,0 +1,54 @@
+﻿@using Tangy_Models.LearnBasics_Models
+
+<div class="container border rounded mt-5" @onclick="(args)=>LastSelectedEvent(args,prod.Name)">
+    Product- @prod.Id
+    <hr>
+    <br />
+    <input type="checkbox" @onchange="@ToggleFavCountEvent" /> Is This Fav?
+
+    <br />
+    Name- @prod.Name
+    <br>
+    Price- @prod.Price
+    <br>
+    <ProductChild>
+    <fragmentOne>#1</fragmentOne>
+    <fragmentTwo>#2</fragmentTwo>
+</ProductChild>
+<br />
+    Show Properties- <input type="checkbox" @bind:event="oninput" @bind="prod.IsActive">
+    @{
+        if (@prod.IsActive)
+        {
+            <div>
+                @foreach (var prop in @prod.DemoProps)
+                {
+                    <p>@prop.Key --- @prop.Name</p>
+                }
+            </div>
+        }
+    }
+
+    <EditAndDelete IsActive="@prod.IsActive"></EditAndDelete>
+</div>
+
+@code {
+    [Parameter]
+    public Demo_Product? prod { get; set; }
+    [Parameter]
+    public EventCallback<bool> ToggleFavCount { get; set; }
+
+    public async Task ToggleFavCountEvent(ChangeEventArgs args)
+    {
+        await ToggleFavCount.InvokeAsync((bool)args.Value);
+    }
+
+    [Parameter]
+    public EventCallback<string> LastSelected { get; set; }
+
+    private async Task LastSelectedEvent(MouseEventArgs args, string name)
+    {
+        await LastSelected.InvokeAsync(name);
+    }
+
+}

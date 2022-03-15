@@ -1,0 +1,25 @@
+﻿<div class="alert alert-info">
+    @Title
+</div>
+@if (ChildContent !=null)
+{
+    <div class="alert alert-info">@ChildContent</div>
+}
+else
+{
+    <div class="alert alert-danger">No Child fragment Data</div>  
+}
+<button class="btn btn-danger" onclick="@OnButtonClicked">Please Click!</button>
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnButtonClicked { get; set; }
+
+}
