@@ -13,4 +13,12 @@ window.showSweetAlert = (type, message) => {
         text: message,
         icon: type
     });
-    }
+}
+
+function showDeleteConfirmationPopUp() {
+    $('#deleteConfimationPopUp').modal('show')
+}
+
+function hideDeleteConfirmationPopUp() {
+    $('#deleteConfimationPopUp').modal('hide')
+}
