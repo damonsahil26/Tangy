@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tangy_Business.Repository.Interfaces;
 using Tangy_DataAccess;
 using Tangy_DataAccess.Data;
@@ -63,6 +58,12 @@ namespace Tangy_Business.Repository
             if (product != null)
             {
                 product.Name = productDTO.Name;
+                product.Description = productDTO.Description;
+                product.CustomerFav = productDTO.CustomerFav;
+                product.ShopFav= productDTO.ShopFav;
+                product.Color=productDTO.Color;
+                product.ImageUrl= productDTO.ImageUrl;
+                product.CategoryId = productDTO.CategoryId;
                 _dbContext.Products.Update(product);
                 await _dbContext.SaveChangesAsync();
                 return _mapper.Map<Product, ProductDTO>(product);
