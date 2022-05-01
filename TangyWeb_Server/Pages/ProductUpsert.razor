@@ -1,0 +1,113 @@
+﻿@page "/Product/Create"
+@page "/Product/Edit/{Id:int}"
+
+@using Tangy_DataAccess
+
+@inject IProductRepository _productRepository
+@inject ICategoryRepository _categoryRepository
+@inject NavigationManager _navManager
+
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3"> @Title Product</h3>
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <img src="images/dualball.gif" />
+        </div>
+    }
+    else
+    {
+        <div class=col-9>
+            <EditForm Model=Product OnValidSubmit="UpsertProduct">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="input-name">Name</label>
+                    <InputText class="form-control" @bind-Value="Product.Name" id="input-name" placeholder="Enter Name" />
+                    <ValidationMessage For="()=>Product.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="input-name">Description</label>
+                    <InputTextArea class="form-control" @bind-Value="Product.Description" id="input-name" placeholder="Enter Description" />
+                    <ValidationMessage For="()=>Product.Description" />
+                </div>
+                <div class="form-group">
+                    <label for="input-name">Color</label>
+                    <InputText class="form-control" @bind-Value="Product.Color" id="input-name" placeholder="Enter Color" />
+                    <ValidationMessage For="()=>Product.Color" />
+                </div>
+                <div class="row pt-3">
+                    <div class="btn-group col-6">
+                        <div class=form-check>
+                            <InputCheckbox @bind-Value="Product.ShopFav" class="form-check-input"></InputCheckbox>
+                            <label class="form-check-label">Is This Shop Fav?</label>
+                        </div>
+                        <div class=form-check>
+                            <InputCheckbox @bind-Value="Product.CustomerFav" class="form-check-input"></InputCheckbox>
+                            <label class="form-check-label">Is This Customer Fav?</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-name">Category</label>
+                    <InputSelect class="form-select" @bind-Value="Product.CategoryId">
+                        <option value=0 disabled="disabled" selected>--Select Category</option>
+                        @foreach (var category in Categories)
+                        {
+                        <option value="@category.Id">@category.Name</option>
+                        }
+                </InputSelect>
+                <ValidationMessage For="()=>Product.CategoryId" />
+            </div>
+            <div class="form-group mt-1">
+                <button class="btn btn-primary" id="btn-comonent">@Title</button>
+                <NavLink href="product" class="btn btn-secondary" id="btn-back">Back to Index</NavLink>
+            </div>
+        </EditForm>
+    </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public IEnumerable<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
+    public ProductDTO Product { get; set; } = new ProductDTO();
+    public string Title { get; set; } = "Create";
+    public bool isLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProduct();
+        }
+    }
+
+    private async Task LoadProduct()
+    {
+        isLoading = true;
+        StateHasChanged();
+        Categories = await _categoryRepository.GetAllCategories();
+        if (Id != 0)
+        {
+            Title = "Update";
+            Product = await _productRepository.GetProductById(Id);
+        }
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public void UpsertProduct()
+    {
+        if (Product.Id == 0)
+        {
+            _productRepository.CreateProduct(Product);
+        }
+        else
+        {
+            _productRepository.UpdateProduct(Product);
+        }
+        _navManager.NavigateTo("product");
+    }
+}
