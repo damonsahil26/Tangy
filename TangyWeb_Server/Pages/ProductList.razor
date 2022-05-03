@@ -1,7 +1,9 @@
 ﻿@page "/Product"
+@using TangyWeb_Server.Helpers
 
 @inject IProductRepository _productRepository
 @inject IJSRuntime _jsRuntime
+@inject IFileUploadService _fileUploadService
 
 <_DeleteConfirmationPopUpComponent DeleteProcessing="isLoading" DeleteConfirmation="DeleteConfirmation_OnClick"></_DeleteConfirmationPopUpComponent>
 <div class="row mt-4">
@@ -25,7 +27,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(var item in Products)
+                    @foreach (var item in Products)
                     {
                         <tr>
                             <td>@item.Name</td>
@@ -68,11 +70,11 @@
     {
         if (firstRender)
         {
-           await LoadCategories();
+            await LoadProducts();
         }
     }
 
-    private async Task LoadCategories()
+    private async Task LoadProducts()
     {
         isLoading = true;
         StateHasChanged();
@@ -94,8 +96,14 @@
         if (isConfirmed && DeleteId != 0)
         {
             await Task.Delay(2000);
+            ProductDTO product = await _productRepository.GetProductById(DeleteId);
+            if (!product.ImageUrl.Contains("default.png"))
+            {
+                _fileUploadService.FileDelete(product.ImageUrl);
+            }
             await _productRepository.DeleteProduct(DeleteId);
-            await LoadCategories();
+            await _jsRuntime.ShowToastr("success", "File Deleted Successfully");
+            await LoadProducts();
             await _jsRuntime.InvokeVoidAsync("hideDeleteConfirmationPopUp");
         }
         isLoading = false;
