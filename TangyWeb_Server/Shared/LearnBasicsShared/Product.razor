@@ -12,10 +12,10 @@
     Price- @prod.Price
     <br>
     <ProductChild>
-    <fragmentOne>#1</fragmentOne>
-    <fragmentTwo>#2</fragmentTwo>
-</ProductChild>
-<br />
+        <fragmentOne>#1</fragmentOne>
+        <fragmentTwo>#2</fragmentTwo>
+    </ProductChild>
+    <br />
     Show Properties- <input type="checkbox" @bind:event="oninput" @bind="prod.IsActive">
     @{
         if (@prod.IsActive)
@@ -38,7 +38,7 @@
     [Parameter]
     public EventCallback<bool> ToggleFavCount { get; set; }
 
-    public async Task ToggleFavCountEvent(ChangeEventArgs args)
+    public async Task ToggleFavCountEvent(Microsoft.AspNetCore.Components.ChangeEventArgs args)
     {
         await ToggleFavCount.InvokeAsync((bool)args.Value);
     }
