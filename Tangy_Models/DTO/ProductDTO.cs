@@ -21,5 +21,6 @@ namespace Tangy_Models.DTO
         [Range(1, int.MaxValue, ErrorMessage = "Please select a categoy")]
         public int CategoryId { get; set; }
         public CategoryDTO Category { get; set; }
+        public ICollection<ProductPriceDTO> Prices { get; set; }
     }
 }
