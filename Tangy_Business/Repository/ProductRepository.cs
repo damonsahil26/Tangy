@@ -39,12 +39,12 @@ namespace Tangy_Business.Repository
 
         public async Task<IEnumerable<ProductDTO>> GetAllProducts()
         {
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_dbContext.Products.Include(u => u.Category));
+            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_dbContext.Products.Include(u => u.Category).Include(u => u.Prices));
         }
 
         public async Task<ProductDTO> GetProductById(int Id)
         {
-            var product = await _dbContext.Products.Include(u => u.Category).FirstOrDefaultAsync(x => x.Id == Id);
+            var product = await _dbContext.Products.Include(u => u.Category).Include(u => u.Prices).FirstOrDefaultAsync(x => x.Id == Id);
             if (product != null)
             {
                 return _mapper.Map<Product, ProductDTO>(product);
