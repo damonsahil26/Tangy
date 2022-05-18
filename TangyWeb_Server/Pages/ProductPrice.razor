@@ -2,7 +2,7 @@
 
 @inject IProductRepository _productRepository
 @inject IProductPriceRepository _productPriceRepository
-
+@attribute [Authorize]
 
 @if (IsLoading)
 {

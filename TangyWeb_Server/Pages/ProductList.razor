@@ -4,6 +4,7 @@
 @inject IProductRepository _productRepository
 @inject IJSRuntime _jsRuntime
 @inject IFileUploadService _fileUploadService
+@attribute [Authorize]
 
 <_DeleteConfirmationPopUpComponent DeleteProcessing="isLoading" DeleteConfirmation="DeleteConfirmation_OnClick"></_DeleteConfirmationPopUpComponent>
 <div class="row mt-4">

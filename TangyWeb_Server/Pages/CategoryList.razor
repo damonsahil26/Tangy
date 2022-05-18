@@ -2,7 +2,7 @@
 
 @inject ICategoryRepository _categoryRepository
 @inject IJSRuntime _jsRuntime
-
+@attribute [Authorize]
 <_DeleteConfirmationPopUpComponent DeleteProcessing="isLoading" DeleteConfirmation="DeleteConfirmation_OnClick"></_DeleteConfirmationPopUpComponent>
 <div class="row mt-4">
     <div class="col-6">
