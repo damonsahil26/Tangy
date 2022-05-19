@@ -1,10 +1,11 @@
 ﻿@page "/Product"
 @using TangyWeb_Server.Helpers
+@using Tangy_Common
 
 @inject IProductRepository _productRepository
 @inject IJSRuntime _jsRuntime
 @inject IFileUploadService _fileUploadService
-@attribute [Authorize]
+@inject NavigationManager _navigationManager
 
 <_DeleteConfirmationPopUpComponent DeleteProcessing="isLoading" DeleteConfirmation="DeleteConfirmation_OnClick"></_DeleteConfirmationPopUpComponent>
 <div class="row mt-4">
@@ -67,6 +68,26 @@
     public IEnumerable<ProductDTO> Products { get; set; } = new List<ProductDTO>();
     public bool isLoading { get; set; }
     public int DeleteId { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationState;
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            var uri = new Uri(_navigationManager.Uri);
+            _navigationManager.NavigateTo($"Identity/Account/Login?returnUrl={uri.LocalPath}", forceLoad: true);
+        }
+        else
+        {
+            if (!authState.User.IsInRole(StaticData.Role_Admin))
+            {
+                _navigationManager.NavigateTo("/ErrorPage");
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

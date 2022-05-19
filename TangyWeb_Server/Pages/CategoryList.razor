@@ -1,8 +1,11 @@
 ﻿@page "/Category"
+@using Tangy_Common
 
 @inject ICategoryRepository _categoryRepository
 @inject IJSRuntime _jsRuntime
-@attribute [Authorize]
+
+@attribute [Authorize(Roles =StaticData.Role_Admin)]
+
 <_DeleteConfirmationPopUpComponent DeleteProcessing="isLoading" DeleteConfirmation="DeleteConfirmation_OnClick"></_DeleteConfirmationPopUpComponent>
 <div class="row mt-4">
     <div class="col-6">
@@ -64,7 +67,7 @@
     {
         if (firstRender)
         {
-           await LoadCategories();
+            await LoadCategories();
         }
     }
 

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDefaultIdentity<IdentityUser>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>(); ;
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjI5NjMyQDMyMzAyZTMxMmUzMGtMdklNQU15Mm84ekk3VjdJVzM0VGlZYVNnOU5UV25GL2p3MUhvRCtwTFk9");
@@ -26,6 +26,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductPriceRepository, ProductPriceRepository>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 var app = builder.Build();
 
@@ -49,7 +50,17 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+SeedData();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.Run();
+
+void SeedData()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}
