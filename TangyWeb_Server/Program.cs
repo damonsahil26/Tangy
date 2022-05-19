@@ -8,8 +8,12 @@ using Tangy_DataAccess.Data;
 using TangyWeb_Server.Data;
 using TangyWeb_Server.Services;
 using TangyWeb_Server.Services.IServices;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddDefaultUI()
+    .AddEntityFrameworkStores<ApplicationDbContext>(); ;
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjI5NjMyQDMyMzAyZTMxMmUzMGtMdklNQU15Mm84ekk3VjdJVzM0VGlZYVNnOU5UV25GL2p3MUhvRCtwTFk9");
 // Add services to the container.
@@ -22,6 +26,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductPriceRepository, ProductPriceRepository>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 var app = builder.Build();
 
@@ -45,5 +50,17 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+SeedData();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
+
+void SeedData()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}

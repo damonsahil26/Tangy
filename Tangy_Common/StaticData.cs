@@ -8,11 +8,15 @@ namespace Tangy_Common
 {
     public static class StaticData
     {
-        public static string ShoppingCart { get; set; } = "ShoppingCart";
-        public static string Order_Pending { get; set; } = "Pending";
-        public static string Order_Confirmed { get; set; } = "Confirmed";
-        public static string Order_Cancelled { get; set; } = "Cancelled";
-        public static string Order_Refunded { get; set; } = "Refuned";
-        public static string Order_Shipped { get; set; } = "Shipped";
+        public const string ShoppingCart = "ShoppingCart";
+
+        public const string Order_Pending = "Pending";
+        public const string Order_Confirmed = "Confirmed";
+        public const string Order_Cancelled = "Cancelled";
+        public const string Order_Refunded = "Refuned";
+        public const string Order_Shipped = "Shipped";
+
+        public const string Role_Admin = "Admin";
+        public const string Role_Customer = "Customer";
     }
 }
