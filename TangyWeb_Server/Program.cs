@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddDefaultUI()
-    .AddEntityFrameworkStores<ApplicationDbContext>(); ;
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjI5NjMyQDMyMzAyZTMxMmUzMGtMdklNQU15Mm84ekk3VjdJVzM0VGlZYVNnOU5UV25GL2p3MUhvRCtwTFk9");
 // Add services to the container.
