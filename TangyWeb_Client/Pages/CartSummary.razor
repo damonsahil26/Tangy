@@ -1,10 +1,11 @@
 ﻿@page "/CartSummary"
+@using Microsoft.AspNetCore.Authorization
 @using TangyWeb_Client.ViewModels
 @using Tangy_Common
 
 @inject ILocalStorageService _localStorageService
 @inject IProductService _productService
-
+@attribute [Authorize]
 
 @if (IsLoading)
 {
@@ -68,33 +69,28 @@ else
 
                         <div class="form-group pt-2">
                             <label class="text-warning">Name</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.Name" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
                             <label class="text-warning">Phone</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.PhoneNumber" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
                             <label class="text-warning">Email</label>
-                            <InputText type="text" class="form-control" />
-                        </div>
-                        <div class="form-group pt-2">
-                            <label class="text-warning">Street Address</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.UserId" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
                             <label class="text-warning">City</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.City" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
                             <label class="text-warning">State</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.State" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
                             <label class="text-warning">Postal Code</label>
-                            <InputText type="text" class="form-control" />
+                            <InputText @bind-Value="Order.OrderHeader.PostalCode" type="text" class="form-control" />
                         </div>
-
 
                         <div class="form-group pt-2">
                             <button type="submit" class="btn btn-success form-control">Checkout Now</button>
@@ -145,6 +141,15 @@ else
             Order.OrderDetail.Add(orderDetailDTO);
             Order.OrderHeader.OrderTotal += (cartItem.Count * productPrice.Price);
 
+        }
+
+        var userInfo = await _localStorageService.GetItemAsync<UserDTO>(StaticData.Local_UserDetails);
+
+        if (userInfo != null)
+        {
+            Order.OrderHeader.UserId = userInfo.Email;
+            Order.OrderHeader.Name = userInfo.Name;
+            Order.OrderHeader.PhoneNumber = userInfo.PhoneNumber;         
         }
 
         IsLoading = false;

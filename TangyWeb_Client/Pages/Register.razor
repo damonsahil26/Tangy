@@ -1,0 +1,58 @@
+﻿@page "/register"
+
+<EditForm Model="signUpRequest" OnValidSubmit="RegisterUser" class="pt-4">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="py-4">
+        <div class=" row form-group ">
+            <div class="col-6 offset-3 ">
+                <div class="card border">
+                    <div class="card-body px-lg-5 pt-4">
+                        <h3 class="col-12 text-success text-center py-2">
+                            <strong>Sign Up</strong>
+                        </h3>
+
+                        @if (IsRegistrationFailed)
+                        {
+                            <div>
+                                @foreach (var error in Errors)
+                                {
+                                    <p class="text-danger">@error</p>
+                                }
+                            </div>
+                        }
+
+                        <div class="py-2">
+                            <InputText @bind-Value="signUpRequest.Name" class="form-control" placeholder="Name..." />
+                            <ValidationMessage For="(()=>signUpRequest.Name)" />
+                        </div>
+                        <div class="py-2">
+                            <InputText @bind-Value="signUpRequest.Email" type="text" class="form-control" placeholder="Email..." />
+                            <ValidationMessage For="(()=>signUpRequest.Email)" />
+                        </div>
+                        <div class="py-2 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> +1</span>
+                            </div>
+                            <InputText @bind-Value="signUpRequest.PhoneNumber" type="text" class="form-control" placeholder="Phone number..." />
+                            <ValidationMessage For="(()=>signUpRequest.PhoneNumber)" />
+                        </div>
+                        <div class="form-row py-2">
+                            <div class="col">
+                                <InputText @bind-Value="signUpRequest.Password" type="password" id="password" placeholder="Password..." class="form-control" />
+                                <ValidationMessage For="(()=>signUpRequest.Password)" />
+                            </div>
+                            <div class="col py-2">
+                                <InputText @bind-Value="signUpRequest.ConfirmPassword" type="password" id="confirm" class="form-control" placeholder="Confirm Password..." />
+                                <ValidationMessage For="(()=>signUpRequest.ConfirmPassword)" />
+                            </div>
+                        </div>
+                        <hr style="background-color:aliceblue" />
+                        <div class="py-2">
+                            <button type="submit" class="btn btn-success btn-block"><i class="bi bi-person-plus-fill"></i> Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
