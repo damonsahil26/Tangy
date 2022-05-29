@@ -8,7 +8,7 @@ namespace Tangy_Models.DTO
 {
     public class OrderDTO
     {
-        public OrderHeaderDTO OrderHeader { get; set; }
-        public List<OrderDetailDTO> OrderDetail { get; set; }
+        public OrderHeaderDTO OrderHeader { get; set; } = new();
+        public List<OrderDetailDTO> OrderDetail { get; set; }=new List<OrderDetailDTO>();
     }
 }

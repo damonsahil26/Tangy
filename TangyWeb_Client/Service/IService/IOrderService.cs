@@ -6,5 +6,9 @@ namespace TangyWeb_Client.Service.IService
     {
         Task<IEnumerable<OrderDTO>> GetAllOrders(string? userId);
         Task<OrderDTO> GetOrderById(int orderHeaderId);
+
+        Task<OrderDTO> CreateOrder(StripePaymentDTO stripePaymentDTO);
+
+        Task<OrderHeaderDTO> MarkPaymentSuccessful(OrderHeaderDTO orderHeaderDTO);
     }
 }

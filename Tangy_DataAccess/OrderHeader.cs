@@ -18,6 +18,9 @@ namespace Tangy_DataAccess
         [Display(Name = "Order Total")]
         public double OrderTotal { get; set; }
         [Required]
+        [Display(Name = "Order Date")]
+        public DateTime OrderDate { get; set; }
+        [Required]
         [Display(Name = "Shipping Date")]
         public DateTime ShippingDate { get; set; }
         [Required]
@@ -42,5 +45,10 @@ namespace Tangy_DataAccess
 
         [Required, Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
+
+        [Required, Display(Name = "Address")]
+        public string Address { get; set; }
+        public string? Tracking { get; set; }
+        public string? Carrier { get; set; }
     }
 }

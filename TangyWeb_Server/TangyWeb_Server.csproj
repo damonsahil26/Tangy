@@ -21,6 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.5" />
+    <PackageReference Include="Radzen.Blazor" Version="3.18.12" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
     <PackageReference Include="Syncfusion.Blazor.Grid" Version="20.1.0.56" />
     <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="20.1.0.56" />

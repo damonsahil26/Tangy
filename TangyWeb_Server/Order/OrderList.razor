@@ -1,0 +1,56 @@
+﻿@page "/orderList"
+
+@inject IOrderRepository _orderReposiotory
+@inject NavigationManager _NavManager
+
+<div>
+    <h3>OrderList</h3>
+
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="OrderHeaders" TItem="OrderHeaderDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="Id" Filterable="false" Title="ID" Width="70px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="Name" Title="Name" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="PhoneNumber" Title="Phone Number" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="UserId" Title="Email" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="OrderTotal" Title="Order Total" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="OrderDate" Title="Order Date" FormatString="{0:d}" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Property="Status" Title="Status" Width="140px" />
+            <RadzenDataGridColumn TItem="OrderHeaderDTO" Title="Details">
+                <Template Context="data">
+                    <RadzenButton Click="(args=>OrderDetails(data.Id))" Text="Details" ButtonStyle="ButtonStyle.Success" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code {
+
+    public IEnumerable<OrderHeaderDTO> OrderHeaders { get; set; }
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadOrders();
+        }
+    }
+
+    private async Task LoadOrders()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var orders = await _orderReposiotory.GetAllOrders();
+        OrderHeaders = orders.Select(u => u.OrderHeader);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private void OrderDetails(int id)
+    {
+        _NavManager.NavigateTo("/order/details/" + id);
+    }
+
+}

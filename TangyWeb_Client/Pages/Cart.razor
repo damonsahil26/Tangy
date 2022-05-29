@@ -109,17 +109,20 @@ else
         isProcessing = true;
         await LoadData();
         isProcessing = false;
-    } 
+    }
 
     private async Task LoadData()
     {
         ShoppingCart = await _localStorageService.GetItemAsync<List<ShoppingCartVM>>(StaticData.ShoppingCart);
         var products = await _productService.GetAllProducts();
-        foreach (var item in ShoppingCart)
+        if (ShoppingCart.Count > 0)
         {
-            item.Product = products.FirstOrDefault(u => u.Id == item.ProductId);
-            item.ProductPrice = item.Product.Prices.FirstOrDefault(u => u.Id == item.ProductPriceId);
-            FinalPrice += (item.Count * item.ProductPrice.Price);
+            foreach (var item in ShoppingCart)
+            {
+                item.Product = products.FirstOrDefault(u => u.Id == item.ProductId);
+                item.ProductPrice = item.Product.Prices.FirstOrDefault(u => u.Id == item.ProductPriceId);
+                FinalPrice += (item.Count * item.ProductPrice.Price);
+            }
         }
     }
 
