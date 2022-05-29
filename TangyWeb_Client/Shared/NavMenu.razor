@@ -1,39 +1,65 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using TangyWeb_Client.ViewModels
+@using Tangy_Common
+@inject ISyncLocalStorageService _synclocalStorageService
+@inject ICartService _cartService
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">TangyWeb_Client</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a class="navbar-brand" href="#">Tangy</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item p-0">
+                    <NavLink class="nav-link" aria-current="page" href="/"><span class="p-2">Home</span></NavLink>
+                </li>
+                <li class="nav-item p-0">
+                    <NavLink class="nav-link" aria-current="page" href="/Cart">
+                        <span class="p-2"><i class="bi bi-bag-heart"></i>(@CountCartItems())</span>
+                    </NavLink>
+                </li>
+            </ul>
+            <AuthorizeView>
+                <Authorized>
+                    <form class="d-flex">
+                        <ul class="navbar-nav">
+                            <li class="nav-item p-0">
+                                <NavLink class="nav-link" aria-current="page" href="#"><span class="p-2">Hello, @context.User.Identity.Name</span></NavLink>
+                            </li>
+                            <li class="nav-item p-0">
+                                <NavLink class="nav-link" aria-current="page" href="logout"><span class="p-2">Logout</span></NavLink>
+                            </li>
+                        </ul>
+                    </form>
+                </Authorized>
+                <NotAuthorized>
+                    <form class="d-flex">
+                        <ul class="navbar-nav">
+                            <li class="nav-item p-0">
+                                <NavLink class="nav-link" aria-current="page" href="Login"><span class="p-2">Login</span></NavLink>
+                            </li>
+                            <li class="nav-item p-0">
+                                <NavLink class="nav-link" aria-current="page" href="register"><span class="p-2">Register</span></NavLink>
+                            </li>
+                        </ul>
+                    </form>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
     </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-    </nav>
-</div>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
+    protected override void OnInitialized()
     {
-        collapseNavMenu = !collapseNavMenu;
+        _cartService.OnChange += StateHasChanged;
+    }
+
+    private int CountCartItems()
+    {
+        var cartItems = _synclocalStorageService.GetItem<List<ShoppingCartVM>>(StaticData.ShoppingCart);
+        return cartItems == null ? 0 : cartItems.Count;
     }
 }

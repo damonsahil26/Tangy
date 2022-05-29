@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,34 +23,34 @@ namespace Tangy_Business.Repository
             _mapper = mapper;
         }
 
-        public CategoryDTO CreateCategory(CategoryDTO categoryDTO)
+        public async Task<CategoryDTO> CreateCategory(CategoryDTO categoryDTO)
         {
             var category = _mapper.Map<CategoryDTO, Category>(categoryDTO);
             category.CreatedDate = DateTime.UtcNow;
             var addedObj = _dbContext.Categories.Add(category);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return _mapper.Map<Category, CategoryDTO>(addedObj.Entity);
         }
 
-        public int DeleteCategory(int Id)
+        public async Task<int> DeleteCategory(int Id)
         {
-            var category = _dbContext.Categories.FirstOrDefault(x => x.Id == Id);
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == Id);
             if (category != null)
             {
                 var deletedObj = _dbContext.Categories.Remove(category);
-                return _dbContext.SaveChanges();
+                return await _dbContext.SaveChangesAsync();
             }
             return 0;
         }
 
-        public IEnumerable<CategoryDTO> GetAllCategories()
+        public async Task<IEnumerable<CategoryDTO>> GetAllCategories()
         {
             return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDTO>>(_dbContext.Categories);
         }
 
-        public CategoryDTO GetCategoryById(int Id)
+        public async Task<CategoryDTO> GetCategoryById(int Id)
         {
-            var category= _dbContext.Categories.FirstOrDefault(x => x.Id == Id);
+            var category= await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == Id);
             if(category != null)
             {
                 return _mapper.Map<Category,CategoryDTO>(category);
@@ -57,13 +58,14 @@ namespace Tangy_Business.Repository
          return new CategoryDTO();
         }
 
-        public CategoryDTO UpdateCategory(CategoryDTO categoryDTO)
+        public async Task<CategoryDTO> UpdateCategory(CategoryDTO categoryDTO)
         {
-            var category=_dbContext.Categories.FirstOrDefault(x => x.Id == categoryDTO.Id);
+            var category=await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == categoryDTO.Id);
             if(category != null)
-            {
-                _dbContext.Categories.Update(_mapper.Map<CategoryDTO,Category>(categoryDTO));
-                _dbContext.SaveChanges();
+            {   
+                category.Name = categoryDTO.Name;
+                _dbContext.Categories.Update(category);
+                await _dbContext.SaveChangesAsync();
                 return _mapper.Map<Category, CategoryDTO>(category);
             }
 

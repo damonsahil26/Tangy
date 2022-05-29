@@ -1,0 +1,84 @@
+﻿@page "/Category/Create"
+@page "/Category/Edit/{Id:int}"
+
+@using Tangy_DataAccess
+
+@inject ICategoryRepository _categoryRepository
+@inject NavigationManager _navManager
+@attribute [Authorize]
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3"> @Title Category</h3>
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <img src="images/dualball.gif" />
+        </div>
+    }
+    else
+    {
+        <div class=col-9>
+            <EditForm Model=Category OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="input-name">Name</label>
+                    <InputText class="form-control" @bind-Value="Category.Name" id="input-name" placeholder="Enter Name" />
+                    <ValidationMessage For="()=>Category.Name" />
+                </div>
+                <div class="form-group mt-1">
+                    <button class="btn btn-primary" id="btn-comonent">@Title</button>
+                    <NavLink href="category" class="btn btn-secondary" id="btn-back">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public CategoryDTO Category { get; set; } = new CategoryDTO();
+    public string Title { get; set; } = "Create";
+    public bool isLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Id == 0)
+            {
+                //create
+                isLoading = false;
+            }
+            else
+            {
+                //Edit
+                Title = "Edit";
+                await LoadCategory();
+            }
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        isLoading = true;
+        StateHasChanged();
+        Category = await _categoryRepository.GetCategoryById(Id);
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public void OnSubmit()
+    {
+        if (Id == 0)
+        {
+            _categoryRepository.CreateCategory(Category);
+            _navManager.NavigateTo("category");
+        }
+        else
+        {
+            _categoryRepository.UpdateCategory(Category);
+            _navManager.NavigateTo("category");
+        }
+    }
+}

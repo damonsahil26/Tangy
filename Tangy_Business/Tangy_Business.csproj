@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="Stripe.net" Version="39.115.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tangy_Common\Tangy_Common.csproj" />
     <ProjectReference Include="..\Tangy_DataAccess\Tangy_DataAccess.csproj" />
     <ProjectReference Include="..\Tangy_Models\Tangy_Models.csproj" />
   </ItemGroup>

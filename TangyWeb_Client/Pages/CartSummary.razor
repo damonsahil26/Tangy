@@ -1,0 +1,193 @@
+﻿@page "/CartSummary"
+@using Microsoft.AspNetCore.Authorization
+@using TangyWeb_Client.Helpers
+@using TangyWeb_Client.ViewModels
+@using Tangy_Common
+
+@inject ILocalStorageService _localStorageService
+@inject IProductService _productService
+@inject IOrderService _orderService
+@inject IPaymentService _paymentService
+@inject IJSRuntime _jsRuntime
+@attribute [Authorize]
+
+@if (IsLoading)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/ajax-loader.gif" />
+    </div>
+}
+else
+{
+    @if (!ShoppingCart.Any())
+    {
+        <p>Please enter items in Cart!!</p>
+    }
+    else
+    {
+        <div class="mt-4 mx-4 px-md-5 mx-md-5 p-1">
+
+            <div class="row p-2 my-3">
+                <div class="col-12 col-lg-7 p-4">
+                    <div class="row px-2 text-success ">
+                        <div class="col-8 py-1"><p style="font-size:x-large;margin:0px;">Order Summary</p></div>
+                        <div class="col-4 p-0" style="text-align:right">
+                            <a href="" class="btn btn-secondary btn-block">Back to cart</a>
+                        </div>
+                    </div>
+
+
+                    @foreach (var item in Order.OrderDetail)
+                    {
+                        <div class="row border p-1 m-1">
+                            <div class="col-3 col-md-2 ">
+                                <img src="@item.Product.ImageUrl" width="100%">
+                            </div>
+                            <div class="col-5 col-md-5 ">
+                                <span class="">Product : @item.Product.Name </span><br />
+                                <span class="pt-1">Size : @item.Price </span><br />
+                                <span class="pt-1">Count : @item.Count </span><br />
+
+                            </div>
+                            <div class="col-4 col-md-5 " style="text-align:right;">
+                                <h4 class="text-warning font-weight-bold pt-2">
+                                    USD
+                                    <span style="border-bottom:1px solid #ff6a00">
+                                        @((item.Count * item.Price).ToString("c"))
+                                    </span>
+                                </h4>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row" style="text-align:right">
+                        <div class="col-12 px-3">
+                            <h3> Order Total : <span class="text-secondary">@Order.OrderHeader.OrderTotal.ToString("c")</span> </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-5 p-4 ml-4 ml-md-0 mt-4 mt-md-0 border">
+                    <EditForm method="post" Model="Order.OrderHeader">
+                        <div class="row px-2 text-success border-bottom"><div class="col-7 py-1"><p style="font-size:x-large;margin:0px;">Enter Details</p></div></div>
+
+                        <div class="form-group pt-2">
+                            <label class="text-warning">Name</label>
+                            <InputText @bind-Value="Order.OrderHeader.Name" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">Phone</label>
+                            <InputText @bind-Value="Order.OrderHeader.PhoneNumber" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">Email</label>
+                            <InputText @bind-Value="Order.OrderHeader.UserId" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">Address</label>
+                            <InputText @bind-Value="Order.OrderHeader.Address" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">City</label>
+                            <InputText @bind-Value="Order.OrderHeader.City" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">State</label>
+                            <InputText @bind-Value="Order.OrderHeader.State" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
+                            <label class="text-warning">Postal Code</label>
+                            <InputText @bind-Value="Order.OrderHeader.PostalCode" type="text" class="form-control" />
+                        </div>
+
+                        <div class="form-group pt-2">
+                            <button type="submit" class="btn btn-success form-control" @onclick="()=>HandleCheckOut()">Checkout Now</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    public OrderDTO Order { get; set; }
+
+    public List<ShoppingCartVM> ShoppingCart { get; set; } = new();
+
+    public bool IsLoading { get; set; }
+    public double FinalPrice { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        ShoppingCart = await _localStorageService.GetItemAsync<List<ShoppingCartVM>>(StaticData.ShoppingCart);
+        var products = await _productService.GetAllProducts();
+        Order = new()
+            {
+                OrderHeader = new()
+                {
+                    Status = StaticData.Order_Pending,
+                    OrderTotal = 0
+                },
+                OrderDetail = new List<OrderDetailDTO>()
+            };
+        foreach (var cartItem in ShoppingCart)
+        {
+            ProductDTO product = await _productService.GetProductById(cartItem.ProductId);
+            ProductPriceDTO productPrice = product.Prices.FirstOrDefault(x => x.Id == cartItem.ProductPriceId);
+            OrderDetailDTO orderDetailDTO = new OrderDetailDTO()
+                {
+                    ProductId = cartItem.ProductId,
+                    Product = product,
+                    Count = cartItem.Count,
+                    Size = productPrice.Size,
+                    Price = productPrice.Price,
+                    ProductName = product.Name,
+                };
+            Order.OrderDetail.Add(orderDetailDTO);
+            Order.OrderHeader.OrderTotal += (cartItem.Count * productPrice.Price);
+
+        }
+
+        var userInfo = await _localStorageService.GetItemAsync<UserDTO>(StaticData.Local_UserDetails);
+
+        if (userInfo != null)
+        {
+            Order.OrderHeader.UserId = userInfo.Email;
+            Order.OrderHeader.Name = userInfo.Name;
+            Order.OrderHeader.PhoneNumber = userInfo.PhoneNumber;
+        }
+
+        IsLoading = false;
+    }
+
+
+    private async Task HandleCheckOut()
+    {
+        try
+        {
+            var paymentDto = new StripePaymentDTO
+                {
+                    Order = Order
+                };
+
+            var response = await _paymentService.CheckOut(paymentDto);
+            var sessionIdAndPI = response.Data.ToString().Split(';');
+            Order.OrderHeader.SessionId = sessionIdAndPI[0];
+            Order.OrderHeader.PaymentIntentId = sessionIdAndPI[1];
+
+            var orderDtoSaved = await _orderService.CreateOrder(paymentDto);
+
+            await _localStorageService.SetItemAsync(StaticData.Local_OrderDetails, orderDtoSaved);
+            await _jsRuntime.InvokeVoidAsync("redirectToCheckout", sessionIdAndPI[0]);
+
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ShowToastr("error", ex.Message);
+        }
+    }
+
+}

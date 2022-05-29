@@ -1,0 +1,166 @@
+﻿@page "/Product/Create"
+@page "/Product/Edit/{Id:int}"
+
+@using TangyWeb_Server.Helpers
+@using Tangy_DataAccess
+
+@inject IProductRepository _productRepository
+@inject ICategoryRepository _categoryRepository
+@inject IFileUploadService _fileUploadService
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navManager
+@attribute [Authorize]
+<div class="row my-2">
+    <h3 class="card-title text-primary mb-3 ml-3"> @Title Product</h3>
+    <div class=col-md-10>
+        @if (isLoading)
+        {
+            <div class="text-center">
+                <img src="images/dualball.gif" />
+            </div>
+        }
+        else
+        {
+            <div class=col-9>
+                <EditForm Model=Product OnValidSubmit="UpsertProduct">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="input-name">Name</label>
+                        <InputText class="form-control" @bind-Value="Product.Name" id="input-name" placeholder="Enter Name" />
+                        <ValidationMessage For="()=>Product.Name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="input-name">Description</label>
+                        <SfRichTextEditor @bind-Value="Product.Description"></SfRichTextEditor>
+                        <ValidationMessage For="()=>Product.Description" />
+                    </div>
+                    <div class="form-group">
+                        <label for="input-name">Color</label>
+                        <InputText class="form-control" @bind-Value="Product.Color" id="input-name" placeholder="Enter Color" />
+                        <ValidationMessage For="()=>Product.Color" />
+                    </div>
+                    <div class="row pt-3">
+                        <div class="form-group col-6">
+                            <div class=form-check>
+                                <InputCheckbox @bind-Value="Product.ShopFav" class="form-check-input"></InputCheckbox>
+                                <label class="form-check-label">Is This Shop Fav?</label>
+                            </div>
+                            <div class="form-group col-6">
+                                <div class=form-check>
+                                    <InputCheckbox @bind-Value="Product.CustomerFav" class="form-check-input"></InputCheckbox>
+                                    <label class="form-check-label">Is This Customer Fav?</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="input-name">Category</label>
+                        <InputSelect class="form-select" @bind-Value="Product.CategoryId">
+                            <option value=0 disabled="disabled" selected>--Select Category</option>
+                            @foreach (var category in Categories)
+                            {
+                            <option value="@category.Id">@category.Name</option>
+                            }
+                    </InputSelect>
+                    <ValidationMessage For="()=>Product.CategoryId" />
+                </div>
+                <div class="form-group col-6 pt-3">
+                    <InputFile OnChange="HandleFileUpload"></InputFile>
+                </div>
+                <div class="form-group py-2">
+                    <button class="btn btn-primary" id="btn-comonent">@Title</button>
+                    <NavLink href="product" class="btn btn-secondary" id="btn-back">Back to Index</NavLink>
+                </div>
+            </EditForm>
+        </div>
+        }
+    </div>
+    <div class="col-md-2">
+        <img src="@Product.ImageUrl" class="w-100" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public IEnumerable<CategoryDTO> Categories { get; set; } = new List<CategoryDTO>();
+    public ProductDTO Product { get; set; } = new ProductDTO()
+        {
+            ImageUrl = "/images/product/default.png"
+        };
+    public string Title { get; set; } = "Create";
+    public string OldImageUrl { get; set; } = String.Empty;
+    public bool isLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProduct();
+        }
+    }
+
+    private async Task LoadProduct()
+    {
+        isLoading = true;
+        StateHasChanged();
+        Categories = await _categoryRepository.GetAllCategories();
+        if (Id != 0)
+        {
+            Title = "Update";
+            Product = await _productRepository.GetProductById(Id);
+            OldImageUrl = Product.ImageUrl;
+        }
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public async Task UpsertProduct()
+    {
+        if (Product.Id == 0)
+        {
+            await _productRepository.CreateProduct(Product);
+        }
+        else
+        {
+            if (OldImageUrl != Product.ImageUrl)
+            {
+                _fileUploadService.FileDelete(OldImageUrl);
+            }
+            await _productRepository.UpdateProduct(Product);
+            await _jsRuntime.ShowToastr("success", "Product Updated Successfully!");
+        }
+        _navManager.NavigateTo("product");
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        try
+        {
+            if (e.GetMultipleFiles().Count > 0)
+            {
+                foreach (var file in e.GetMultipleFiles())
+                {
+
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+                    if ((fileInfo.Extension.ToLower() == ".jpg") ||
+                    (fileInfo.Extension.ToLower() == ".png") ||
+                    (fileInfo.Extension.ToLower() == "jpeg"))
+                    {
+                        Product.ImageUrl = await _fileUploadService.FileUpload(file);
+                    }
+                    else
+                    {
+                        await _jsRuntime.ShowToastr("error", "Enter Valid File");
+                    }
+                }
+            }
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ShowToastr("error", ex.Message);
+        }
+    }
+}

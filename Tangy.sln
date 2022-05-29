@@ -9,11 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TangyWeb_Client", "TangyWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tangy_Models", "Tangy_Models\Tangy_Models.csproj", "{D32A10A0-D2A0-436D-8F1A-E709CDBAED5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tangy_Business", "Tangy_Business\Tangy_Business.csproj", "{B88D2A65-D74F-4C50-806F-ABE1F499B35B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tangy_Business", "Tangy_Business\Tangy_Business.csproj", "{B88D2A65-D74F-4C50-806F-ABE1F499B35B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tangy_Common", "Tangy_Common\Tangy_Common.csproj", "{840B9FD9-3509-4DF1-8B2A-EE0FCC7495F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tangy_Common", "Tangy_Common\Tangy_Common.csproj", "{840B9FD9-3509-4DF1-8B2A-EE0FCC7495F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tangy_DataAccess", "Tangy_DataAccess\Tangy_DataAccess.csproj", "{817D27D1-2ECC-4D4A-900E-C38527618E7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tangy_DataAccess", "Tangy_DataAccess\Tangy_DataAccess.csproj", "{817D27D1-2ECC-4D4A-900E-C38527618E7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tamgy_API", "Tamgy_API\Tamgy_API.csproj", "{5ADC9C79-71D7-4A8D-ADA9-B54B4A0BC487}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{817D27D1-2ECC-4D4A-900E-C38527618E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{817D27D1-2ECC-4D4A-900E-C38527618E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{817D27D1-2ECC-4D4A-900E-C38527618E7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ADC9C79-71D7-4A8D-ADA9-B54B4A0BC487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ADC9C79-71D7-4A8D-ADA9-B54B4A0BC487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ADC9C79-71D7-4A8D-ADA9-B54B4A0BC487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ADC9C79-71D7-4A8D-ADA9-B54B4A0BC487}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
