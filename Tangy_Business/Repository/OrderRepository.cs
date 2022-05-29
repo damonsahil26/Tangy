@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tangy_Business.Repository.Interfaces;
 using Tangy_Common;
 using Tangy_DataAccess;
@@ -25,11 +20,43 @@ namespace Tangy_Business.Repository
             _mapper = mapper;
         }
 
+        public async Task<OrderHeaderDTO> CancelOrder(int orderId)
+        {
+            var order = await _applicationDbContext.OrderHeaders.FindAsync(orderId);
+            if (order == null)
+            {
+                return new OrderHeaderDTO();
+            }
+
+            if (order.Status == StaticData.Order_Pending)
+            {
+                order.Status = StaticData.Order_Cancelled;
+                await _applicationDbContext.SaveChangesAsync();
+            }
+
+            if (order.Status == StaticData.Order_Confirmed)
+            {
+                //refund
+                var options = new Stripe.RefundCreateOptions
+                {
+                    Reason = Stripe.RefundReasons.RequestedByCustomer,
+                    PaymentIntent = order.PaymentIntentId
+                };
+                var service = new Stripe.RefundService();
+                Stripe.Refund refund=service.Create(options);
+
+                order.Status = StaticData.Order_Refunded;
+                await _applicationDbContext.SaveChangesAsync();
+            }
+            return _mapper.Map<OrderHeader, OrderHeaderDTO>(order);
+        }
+
         public async Task<OrderDTO> CreateOrder(OrderDTO objOrderDTO)
         {
             try
             {
                 var order = _mapper.Map<OrderDTO, Order>(objOrderDTO);
+                order.OrderHeader.OrderDate = DateTime.Now;
                 _applicationDbContext.OrderHeaders.Add(order.OrderHeader);
                 await _applicationDbContext.SaveChangesAsync();
                 foreach (var detail in order.OrderDetail)
@@ -121,10 +148,21 @@ namespace Tangy_Business.Repository
         {
             if (objOrderHeader != null)
             {
-                var header = _mapper.Map<OrderHeaderDTO, OrderHeader>(objOrderHeader);
-                _applicationDbContext.OrderHeaders.Update(header);
+                var headerFromDb = await _applicationDbContext.OrderHeaders.FirstOrDefaultAsync(u => u.Id == objOrderHeader.Id);
+                headerFromDb.Name = objOrderHeader.Name;
+                headerFromDb.Address = objOrderHeader.Address;
+                headerFromDb.City = objOrderHeader.City;
+                headerFromDb.PostalCode = objOrderHeader.PostalCode;
+                headerFromDb.PhoneNumber = objOrderHeader.PhoneNumber;
+                headerFromDb.Tracking = objOrderHeader.Tracking;
+                headerFromDb.Carrier = objOrderHeader.Carrier;
+                headerFromDb.Status = objOrderHeader.Status;
+                headerFromDb.State = objOrderHeader.State;
+                headerFromDb.ShippingDate = objOrderHeader.ShippingDate;
+                _applicationDbContext.OrderHeaders.Update(headerFromDb);
+
                 await _applicationDbContext.SaveChangesAsync();
-                return _mapper.Map<OrderHeader, OrderHeaderDTO>(header);
+                return _mapper.Map<OrderHeader, OrderHeaderDTO>(headerFromDb);
             }
             return new OrderHeaderDTO();
         }

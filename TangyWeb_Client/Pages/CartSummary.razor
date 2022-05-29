@@ -1,10 +1,14 @@
 ﻿@page "/CartSummary"
 @using Microsoft.AspNetCore.Authorization
+@using TangyWeb_Client.Helpers
 @using TangyWeb_Client.ViewModels
 @using Tangy_Common
 
 @inject ILocalStorageService _localStorageService
 @inject IProductService _productService
+@inject IOrderService _orderService
+@inject IPaymentService _paymentService
+@inject IJSRuntime _jsRuntime
 @attribute [Authorize]
 
 @if (IsLoading)
@@ -80,6 +84,10 @@ else
                             <InputText @bind-Value="Order.OrderHeader.UserId" type="text" class="form-control" />
                         </div>
                         <div class="form-group pt-2">
+                            <label class="text-warning">Address</label>
+                            <InputText @bind-Value="Order.OrderHeader.Address" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group pt-2">
                             <label class="text-warning">City</label>
                             <InputText @bind-Value="Order.OrderHeader.City" type="text" class="form-control" />
                         </div>
@@ -93,7 +101,7 @@ else
                         </div>
 
                         <div class="form-group pt-2">
-                            <button type="submit" class="btn btn-success form-control">Checkout Now</button>
+                            <button type="submit" class="btn btn-success form-control" @onclick="()=>HandleCheckOut()">Checkout Now</button>
                         </div>
                     </EditForm>
                 </div>
@@ -149,10 +157,37 @@ else
         {
             Order.OrderHeader.UserId = userInfo.Email;
             Order.OrderHeader.Name = userInfo.Name;
-            Order.OrderHeader.PhoneNumber = userInfo.PhoneNumber;         
+            Order.OrderHeader.PhoneNumber = userInfo.PhoneNumber;
         }
 
         IsLoading = false;
+    }
+
+
+    private async Task HandleCheckOut()
+    {
+        try
+        {
+            var paymentDto = new StripePaymentDTO
+                {
+                    Order = Order
+                };
+
+            var response = await _paymentService.CheckOut(paymentDto);
+            var sessionIdAndPI = response.Data.ToString().Split(';');
+            Order.OrderHeader.SessionId = sessionIdAndPI[0];
+            Order.OrderHeader.PaymentIntentId = sessionIdAndPI[1];
+
+            var orderDtoSaved = await _orderService.CreateOrder(paymentDto);
+
+            await _localStorageService.SetItemAsync(StaticData.Local_OrderDetails, orderDtoSaved);
+            await _jsRuntime.InvokeVoidAsync("redirectToCheckout", sessionIdAndPI[0]);
+
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ShowToastr("error", ex.Message);
+        }
     }
 
 }

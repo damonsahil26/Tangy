@@ -16,5 +16,6 @@ namespace Tangy_Business.Repository.Interfaces
         public Task<OrderHeaderDTO> UpdateOrderHeader(OrderHeaderDTO objOrderHeader);
         public Task<OrderHeaderDTO> MarkPaymentSuccessful(int id);
         public Task<bool> UpdateOrderStatus(int orderId, string status);
+        public Task<OrderHeaderDTO> CancelOrder(int orderId);
     }
 }

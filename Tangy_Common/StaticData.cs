@@ -13,7 +13,7 @@ namespace Tangy_Common
         public const string Order_Pending = "Pending";
         public const string Order_Confirmed = "Confirmed";
         public const string Order_Cancelled = "Cancelled";
-        public const string Order_Refunded = "Refuned";
+        public const string Order_Refunded = "Refunded";
         public const string Order_Shipped = "Shipped";
 
         public const string Role_Admin = "Admin";
@@ -21,5 +21,6 @@ namespace Tangy_Common
 
         public const string Local_Token = "Jwt Token";
         public const string Local_UserDetails = "User Details";
+        public const string Local_OrderDetails = "Local_OrderDetails";
     }
 }

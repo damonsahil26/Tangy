@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
 using System.Text;
 using Tamgy_API.Helpers;
 using Tangy_Business.Repository;
@@ -49,6 +50,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var apiSettingsSection = builder.Configuration.GetSection("ApiSettings");
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
 builder.Services.Configure<APISettings>(apiSettingsSection);
 
 var apisettings = apiSettingsSection.Get<APISettings>();
@@ -76,6 +78,7 @@ builder.Services.AddAuthentication(opt =>
 });
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddCors(o => o.AddPolicy("Tangy", builder =>
 {
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();

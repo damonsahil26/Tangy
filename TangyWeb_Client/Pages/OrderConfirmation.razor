@@ -1,0 +1,66 @@
+﻿@page "/OrderConfirmation"
+@using Tangy_Common
+
+@inject ILocalStorageService _localStorageService
+@inject IOrderService _orderService
+
+<div class="container">
+    @if (IsLoading)
+    {
+        <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+            <img src="images/ajax-loader.gif" />
+        </div>
+    }
+    else
+    {
+        if (Order.OrderHeader.Status == StaticData.Order_Confirmed)
+        {
+            <div class="row mt-4 pt-4 ">
+                <div class="col-10 offset-1 text-center">
+                    <h2 class="text-warning">Order Confirmed</h2>
+                    <p>Your order has been placed successfully with order Id : @Order.OrderHeader.Id</p>
+                </div>
+                <div class="col-8 offset-2">
+                    <img src="images/confirmation.jpg" width="100%" style="border-radius:30px" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row mt-4 pt-4 ">
+                <div class="col-10 offset-1 text-center">
+                    <h2 class="text-warning">Order Issue</h2>
+                    <p>Your order has not been placed successfully. Please contact us with order Id : @Order.OrderHeader.Id</p>
+                </div>
+                <div class="col-8 offset-2">
+                    <img src="images/confirmation.jpg" width="100%" style="border-radius:30px" />
+                </div>
+            </div>
+        }
+
+    }
+</div>
+
+
+@code {
+
+    public bool IsLoading { get; set; }
+
+    public OrderDTO Order { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        Order = await _localStorageService.GetItemAsync<OrderDTO>(StaticData.Local_OrderDetails);
+        var updatedOrder = await _orderService.MarkPaymentSuccessful(Order.OrderHeader);
+        if (updatedOrder.Status == StaticData.Order_Confirmed)
+        {
+            Order.OrderHeader.Status = updatedOrder.Status;
+            await _localStorageService.RemoveItemAsync(StaticData.ShoppingCart);
+
+            await _localStorageService.RemoveItemAsync(StaticData.Local_OrderDetails);
+        }
+        IsLoading = false;
+    }
+
+}

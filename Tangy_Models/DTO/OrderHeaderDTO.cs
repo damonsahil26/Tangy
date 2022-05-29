@@ -19,7 +19,11 @@ namespace Tangy_Models.DTO
         public double OrderTotal { get; set; }
         [Required]
         [Display(Name = "Shipping Date")]
-        public DateTime ShippingDate { get; set; }
+        public DateTime ShippingDate { get; set; } 
+        
+        [Required]
+        [Display(Name = "Order Date")]
+        public DateTime OrderDate { get; set; }
         [Required]
         public string Status { get; set; }
 
@@ -41,5 +45,10 @@ namespace Tangy_Models.DTO
 
         [Required, Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
+        
+        [Required, Display(Name = "Address")]
+        public string Address { get; set; }
+        public string? Tracking { get; set; }
+        public string? Carrier { get; set; }
     }
 }
